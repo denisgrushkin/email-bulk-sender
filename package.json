@@ -1,5 +1,5 @@
 {
-  "version": "0.0.2",
+  "version": "0.0.3",
   "keywords": [],
   "type": "commonjs",
   "exports": {
@@ -28,8 +28,7 @@
     "watch:link": "strapi-plugin watch:link",
     "verify": "strapi-plugin verify",
     "test:ts:front": "run -T tsc -p admin/tsconfig.json",
-    "test:ts:back": "run -T tsc -p server/tsconfig.json",
-    "postinstall": "npm run build"
+    "test:ts:back": "run -T tsc -p server/tsconfig.json"
   },
   "dependencies": {
     "@strapi/design-system": "^2.0.0-rc.29",
