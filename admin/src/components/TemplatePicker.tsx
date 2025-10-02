@@ -32,7 +32,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate, o
     };
 
     loadTemplates();
-  }, [getTemplates]);
+  }, []);
 
   const handleTemplateChange = (value: string) => {
     onTemplateChange(value);
