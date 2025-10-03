@@ -13,8 +13,10 @@ export default [
     path: '/templates',
     handler: 'controller.getTemplates',
     config: {
-      policies: [],
-      auth: false,
+      policies: ['admin::isAuthenticatedAdmin'],
+      auth: {
+        scope: ['admin::isAuthenticatedAdmin'],
+      },
     },
   },
   {
@@ -22,8 +24,10 @@ export default [
     path: '/templates/:templatePath',
     handler: 'controller.getTemplateContent',
     config: {
-      policies: [],
-      auth: false,
+      policies: ['admin::isAuthenticatedAdmin'],
+      auth: {
+        scope: ['admin::isAuthenticatedAdmin'],
+      },
     },
   },
   {
@@ -32,7 +36,9 @@ export default [
     handler: 'controller.sendBulkEmails',
     config: {
       policies: ['admin::isAuthenticatedAdmin'],
-      auth: true,
+      auth: {
+        scope: ['admin::isAuthenticatedAdmin'],
+      },
     },
   },
 ];

@@ -138,6 +138,7 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
       const results = [];
 
       strapi.log.info(`Processing ${documents.length} emails with template: ${template}`);
+      strapi.log.info(`Template content: ${templateContent}`);
 
       // Send emails to each document with rate limiting
       for (let i = 0; i < documents.length; i++) {
