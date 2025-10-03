@@ -15,6 +15,15 @@ const renderTemplate = (template: string, data: Record<string, any>): string => 
   });
 };
 
+const htmlToText = (html: string) =>
+  html
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<\/(p|div|br|li|h[1-6])>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\n{2,}/g, '\n')
+    .trim();
+
 interface EmailBulkSenderConfig {
   emailTemplate?: {
     enabled?: boolean;
@@ -156,6 +165,7 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
             to: document.email,
             subject: subject,
             html: renderedContent,
+            text: htmlToText(renderedContent)
           });
 
           results.push({
