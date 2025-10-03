@@ -2,10 +2,25 @@ import type { Core } from '@strapi/strapi';
 import * as fs from 'fs';
 import * as path from 'path';
 
+// Email validation utility
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+// Enhanced template renderer
+const renderTemplate = (template: string, data: Record<string, any>): string => {
+  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+    return data[key] !== undefined ? String(data[key]) : match;
+  });
+};
+
 interface EmailBulkSenderConfig {
   emailTemplate?: {
     enabled?: boolean;
     path?: string;
+    subject?: string;
+    rateLimitDelay?: number; // Delay between emails in milliseconds
   };
 }
 
@@ -78,19 +93,39 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
 
   async sendBulkEmails(ctx) {
     try {
-      strapi.log.warn(`Server admin email: ${strapi.config.get('server.admin.email')}`);
+      strapi.log.info('Starting bulk email sending process');
 
       const { template, documents } = ctx.request.body;
 
+      // Enhanced validation
       if (!template || !documents || !Array.isArray(documents)) {
         ctx.status = 400;
         ctx.body = { error: 'Template and documents array are required' };
         return;
       }
 
+      if (documents.length === 0) {
+        ctx.status = 400;
+        ctx.body = { error: 'At least one document is required' };
+        return;
+      }
+
+      // Validate all email addresses before processing
+      const invalidEmails = documents.filter(doc => !doc.email || !isValidEmail(doc.email));
+      if (invalidEmails.length > 0) {
+        ctx.status = 400;
+        ctx.body = {
+          error: 'Invalid email addresses found',
+          invalidEmails: invalidEmails.map(doc => ({ id: doc.id, email: doc.email }))
+        };
+        return;
+      }
+
       // Get template content
       const config = strapi.config.get('plugin.email-bulk-sender') as EmailBulkSenderConfig;
       const basePath = config?.emailTemplate?.path || 'templates';
+      const rateLimitDelay = config?.emailTemplate?.rateLimitDelay || 1000; // Default 1 second delay
+
       const templatePath = path.resolve(process.cwd(), basePath, `${template}.html`);
 
       if (!fs.existsSync(templatePath)) {
@@ -102,22 +137,24 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
       const templateContent = fs.readFileSync(templatePath, 'utf8');
       const results = [];
 
-      // Send emails to each document
-      for (const document of documents) {
+      strapi.log.info(`Processing ${documents.length} emails with template: ${template}`);
+
+      // Send emails to each document with rate limiting
+      for (let i = 0; i < documents.length; i++) {
+        const document = documents[i];
+
         try {
-          // Render template with document data
-          let renderedContent = templateContent;
-          if (document.email) {
-            renderedContent = renderedContent.replace(/\{\{\s*email\s*\}\}/g, document.email);
-          }
-          if (document.name) {
-            renderedContent = renderedContent.replace(/\{\{\s*name\s*\}\}/g, document.name);
-          }
+          // Render template with document data using enhanced renderer
+          const renderedContent = renderTemplate(templateContent, {
+            email: document.email,
+            name: document.name,
+            ...document // Include any additional fields from the document
+          });
 
           // Send email using Strapi email plugin
           await strapi.plugins.email.services.email.send({
             to: document.email,
-            subject: `GuestSpot - ${template.charAt(0).toUpperCase() + template.slice(1)}`,
+            subject: config?.emailTemplate?.subject || 'Subject',
             html: renderedContent,
           });
 
@@ -128,7 +165,13 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
             success: true
           });
 
-          strapi.log.info(`Email sent successfully to ${document.email}`);
+          strapi.log.info(`Email sent successfully to ${document.email} (${i + 1}/${documents.length})`);
+
+          // Rate limiting: add delay between emails (except for the last one)
+          if (i < documents.length - 1 && rateLimitDelay > 0) {
+            await new Promise(resolve => setTimeout(resolve, rateLimitDelay));
+          }
+
         } catch (emailError) {
           strapi.log.error(`Failed to send email to ${document.email}:`, emailError);
           results.push({
@@ -136,13 +179,15 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
             email: document.email,
             status: 'failed',
             success: false,
-            error: emailError.message
+            error: emailError.message || 'Unknown error occurred'
           });
         }
       }
 
       const successCount = results.filter(r => r.success).length;
       const failureCount = results.filter(r => !r.success).length;
+
+      strapi.log.info(`Bulk email sending completed. ${successCount} sent, ${failureCount} failed.`);
 
       ctx.body = {
         success: true,
@@ -158,7 +203,10 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
     } catch (error) {
       strapi.log.error('Error sending bulk emails:', error);
       ctx.status = 500;
-      ctx.body = { error: 'Failed to send bulk emails' };
+      ctx.body = {
+        error: 'Failed to send bulk emails',
+        details: error.message || 'Unknown error occurred'
+      };
     }
   },
 });

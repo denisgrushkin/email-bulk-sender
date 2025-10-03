@@ -31,8 +31,8 @@ export default [
     path: '/send-bulk-emails',
     handler: 'controller.sendBulkEmails',
     config: {
-      policies: [],
-      auth: false,
+      policies: ['admin::isAuthenticatedAdmin'],
+      auth: true,
     },
   },
 ];

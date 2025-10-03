@@ -13,12 +13,14 @@ Email Bulk Sender is a Strapi v5 plugin that provides functionality for mass sen
 
 ## Features
 
-- 📧 Bulk email sending
+- 📧 Bulk email sending with rate limiting
 - 🎨 HTML template support with variables
 - 👥 Recipient selection from various collections
 - 📊 Send result tracking
-- 🔒 Secure template file handling
+- 🔒 Secure template file handling and authentication
 - 🎯 Message personalization
+- ✅ Email validation
+- ⚡ Configurable rate limiting
 
 ## Installation
 
@@ -67,7 +69,7 @@ export default {
 
 ### Template Path Configuration
 
-By default, the plugin looks for templates in the `templates/` folder in the project root. You can change this in the configuration:
+By default, the plugin looks for templates in the `templates/` folder in the project root. You can customize various settings:
 
 ```typescript
 export default {
@@ -78,13 +80,22 @@ export default {
     config: {
       emailTemplate: {
         enabled: true,
-        path: 'templates' // path to templates folder
+        path: 'templates', // path to templates folder
+        subject: 'MyApp', // for email subjects
+        rateLimitDelay: 2000 // delay between emails in milliseconds (default: 1000)
       }
     }
   },
   // ... other settings
 }
 ```
+
+#### Configuration Options
+
+- `enabled`: Enable/disable the email template functionality (default: true)
+- `path`: Path to the templates folder relative to project root (default: 'templates')
+- `subject`: For email subject (default: 'Subject')
+- `rateLimitDelay`: Delay between email sends in milliseconds to prevent SMTP rate limiting (default: 1000)
 
 ## Usage
 
@@ -95,6 +106,7 @@ export default {
 3. Available variables:
    - `{{email}}` - recipient's email
    - `{{name}}` - recipient's name
+   - Any additional fields from your document data (e.g., `{{company}}`, `{{position}}`, etc.)
 
 Example template (`templates/welcome.html`):
 
@@ -151,6 +163,16 @@ Request body:
   ]
 }
 ```
+
+## Security Features
+
+The plugin includes several security measures:
+
+- **Authentication Required**: All email sending endpoints require admin authentication
+- **Email Validation**: All email addresses are validated before sending
+- **Template Path Security**: Template paths are validated to prevent directory traversal attacks
+- **Rate Limiting**: Configurable delays between emails to prevent SMTP abuse
+- **Input Validation**: Comprehensive validation of all input parameters
 
 ## Project Structure
 
