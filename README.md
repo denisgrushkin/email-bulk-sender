@@ -24,7 +24,7 @@ Email Bulk Sender is a `Strapi v5` plugin that provides functionality for mass s
 
 ## Installation
 
-1. Ensure the plugin is located in the `src/plugins/email-bulk-sender/` folder
+1. Ensure the plugin is located in the `src/plugins/strapi-plugin-email-bulk-sender/` folder
 2. The plugin is automatically loaded by Strapi on startup
 
 ## Configuration
@@ -36,9 +36,9 @@ Add configuration to the `config/plugins.ts` file:
 ```typescript
 export default {
   // ... other plugins
-  'email-bulk-sender': {
+  'strapi-plugin-email-bulk-sender': {
     enabled: true,
-    resolve: './src/plugins/email-bulk-sender'
+    resolve: './src/plugins/strapi-plugin-email-bulk-sender'
   },
   // ... other settings
 }
@@ -74,9 +74,9 @@ By default, the plugin looks for templates in the `templates/` folder in the pro
 ```typescript
 export default {
   // ... other plugins
-  'email-bulk-sender': {
+  'strapi-plugin-email-bulk-sender': {
     enabled: true,
-    resolve: './src/plugins/email-bulk-sender',
+    resolve: './src/plugins/strapi-plugin-email-bulk-sender',
     config: {
       emailTemplate: {
         enabled: true,
@@ -135,17 +135,17 @@ Example template (`templates/welcome.html`):
 
 #### Get Templates List
 ```
-GET /api/email-bulk-sender/templates
+GET /api/strapi-plugin-email-bulk-sender/templates
 ```
 
 #### Get Template Content
 ```
-GET /api/email-bulk-sender/templates/:templatePath
+GET /api/strapi-plugin-email-bulk-sender/templates/:templatePath
 ```
 
 #### Send Bulk Emails
 ```
-POST /api/email-bulk-sender/send-bulk-emails
+POST /api/strapi-plugin-email-bulk-sender/send-bulk-emails
 ```
 
 Request body:
@@ -175,7 +175,7 @@ The plugin includes several security measures:
 ## Project Structure
 
 ```
-src/plugins/email-bulk-sender/
+src/plugins/strapi-plugin-email-bulk-sender/
 ├── admin/                 # Administrative interface
 │   ├── src/
 │   │   ├── components/    # React components

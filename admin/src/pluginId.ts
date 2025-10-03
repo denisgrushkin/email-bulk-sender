@@ -1,1 +1,1 @@
-export const PLUGIN_ID = 'email-bulk-sender';
+export const PLUGIN_ID = 'strapi-plugin-email-bulk-sender';

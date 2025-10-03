@@ -35,7 +35,7 @@ interface EmailBulkSenderConfig {
 const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
   index(ctx) {
     ctx.body = strapi
-      .plugin('email-bulk-sender')
+      .plugin('strapi-plugin-email-bulk-sender')
       // the name of the service file & the method.
       .service('service')
       .getWelcomeMessage();
@@ -43,7 +43,7 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
 
   async getTemplates(ctx) {
     try {
-      const config = strapi.config.get('plugin.email-bulk-sender') as EmailBulkSenderConfig;
+      const config = strapi.config.get('plugin.strapi-plugin-email-bulk-sender') as EmailBulkSenderConfig;
       const templatePath = config?.emailTemplate?.path || 'templates';
       const fullPath = path.resolve(process.cwd(), templatePath);
 
@@ -72,7 +72,7 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
   async getTemplateContent(ctx) {
     try {
       const { templatePath } = ctx.params;
-      const config = strapi.config.get('plugin.email-bulk-sender') as EmailBulkSenderConfig;
+      const config = strapi.config.get('plugin.strapi-plugin-email-bulk-sender') as EmailBulkSenderConfig;
       const basePath = config?.emailTemplate?.path || 'templates';
       const fullPath = path.resolve(process.cwd(), basePath, templatePath);
 
@@ -130,7 +130,7 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
       }
 
       // Get template content
-      const config = strapi.config.get('plugin.email-bulk-sender') as EmailBulkSenderConfig;
+      const config = strapi.config.get('plugin.strapi-plugin-email-bulk-sender') as EmailBulkSenderConfig;
       const basePath = config?.emailTemplate?.path || 'templates';
       const rateLimitDelay = config?.emailTemplate?.rateLimitDelay || 1000; // Default 1 second delay
 

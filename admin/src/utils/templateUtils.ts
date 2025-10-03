@@ -11,7 +11,7 @@ export const useTemplates = () => {
 
   const getTemplates = async (): Promise<Template[]> => {
     try {
-      const response = await get('/email-bulk-sender/templates');
+      const response = await get('/strapi-plugin-email-bulk-sender/templates');
       return response.data.templates || [];
     } catch (error: any) {
       console.error('Error fetching templates:', error);
@@ -32,7 +32,7 @@ export const useTemplates = () => {
 
   const getTemplateContent = async (templatePath: string): Promise<string> => {
     try {
-      const response = await get(`/email-bulk-sender/templates/${encodeURIComponent(templatePath)}`);
+      const response = await get(`/strapi-plugin-email-bulk-sender/templates/${encodeURIComponent(templatePath)}`);
       return response.data.content || '';
     } catch (error: any) {
       console.error('Error fetching template content:', error);
@@ -83,7 +83,7 @@ export const useEmailSender = () => {
     };
   }> => {
     try {
-      const response = await post('/email-bulk-sender/send-bulk-emails', {
+      const response = await post('/strapi-plugin-email-bulk-sender/send-bulk-emails', {
         template,
         subject,
         documents
