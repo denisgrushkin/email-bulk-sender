@@ -4,7 +4,7 @@ A Strapi plugin that allows sending bulk email campaigns using HTML templates.
 
 ## Description
 
-Email Bulk Sender is a Strapi v5 plugin that provides functionality for mass sending personalized email messages. The plugin includes:
+Email Bulk Sender is a `Strapi v5` plugin that provides functionality for mass sending personalized email messages. The plugin includes:
 
 - **Administrative interface** for selecting recipients and templates
 - **Template system** with variable support

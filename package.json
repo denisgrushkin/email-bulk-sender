@@ -1,5 +1,5 @@
 {
-  "version": "0.0.8",
+  "version": "0.0.9",
   "keywords": [],
   "type": "commonjs",
   "exports": {
@@ -58,11 +58,11 @@
   },
   "strapi": {
     "kind": "plugin",
-    "name": "email-bulk-sender",
+    "name": "strapi-plugin-email-bulk-sender",
     "displayName": "Email bulk sender",
     "description": ""
   },
-  "name": "email-bulk-sender",
+  "name": "strapi-plugin-email-bulk-sender",
   "description": "",
   "license": "MIT",
   "author": "denisgrushkin <denis.grushkin@maddevs.io>"
