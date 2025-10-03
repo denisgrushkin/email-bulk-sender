@@ -19,7 +19,6 @@ interface EmailBulkSenderConfig {
   emailTemplate?: {
     enabled?: boolean;
     path?: string;
-    subject?: string;
     rateLimitDelay?: number; // Delay between emails in milliseconds
   };
 }
@@ -95,12 +94,12 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
     try {
       strapi.log.info('Starting bulk email sending process');
 
-      const { template, documents } = ctx.request.body;
+      const { template, subject, documents } = ctx.request.body;
 
       // Enhanced validation
-      if (!template || !documents || !Array.isArray(documents)) {
+      if (!template || !subject || !documents || !Array.isArray(documents)) {
         ctx.status = 400;
-        ctx.body = { error: 'Template and documents array are required' };
+        ctx.body = { error: 'Template, subject and documents array are required' };
         return;
       }
 
@@ -155,7 +154,7 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
           // Send email using Strapi email plugin
           await strapi.plugins.email.services.email.send({
             to: document.email,
-            subject: config?.emailTemplate?.subject || 'Subject',
+            subject: subject,
             html: renderedContent,
           });
 
@@ -180,7 +179,8 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
             email: document.email,
             status: 'failed',
             success: false,
-            error: emailError.message || 'Unknown error occurred'
+            error: emailError?.response?.data,
+            message: emailError.message || 'Unknown error occurred'
           });
         }
       }

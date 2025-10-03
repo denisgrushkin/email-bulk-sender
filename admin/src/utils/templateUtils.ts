@@ -72,7 +72,7 @@ export const renderTemplate = (template: string, data: Record<string, any>): str
 export const useEmailSender = () => {
   const { post } = useFetchClient();
 
-  const sendBulkEmails = async (template: string, documents: any[]): Promise<{
+  const sendBulkEmails = async (template: string, subject: string, documents: any[]): Promise<{
     success: boolean;
     message: string;
     results: any[];
@@ -85,6 +85,7 @@ export const useEmailSender = () => {
     try {
       const response = await post('/email-bulk-sender/send-bulk-emails', {
         template,
+        subject,
         documents
       });
       return response.data;

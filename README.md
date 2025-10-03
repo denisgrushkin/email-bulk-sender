@@ -81,7 +81,6 @@ export default {
       emailTemplate: {
         enabled: true,
         path: 'templates', // path to templates folder
-        subject: 'MyApp', // for email subjects
         rateLimitDelay: 2000 // delay between emails in milliseconds (default: 1000)
       }
     }
@@ -94,7 +93,6 @@ export default {
 
 - `enabled`: Enable/disable the email template functionality (default: true)
 - `path`: Path to the templates folder relative to project root (default: 'templates')
-- `subject`: For email subject (default: 'Subject')
 - `rateLimitDelay`: Delay between email sends in milliseconds to prevent SMTP rate limiting (default: 1000)
 
 ## Usage

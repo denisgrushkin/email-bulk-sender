@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Box, Typography, Alert, SingleSelect, SingleSelectOption } from '@strapi/design-system';
+import { Button, Box, Typography, Alert, SingleSelect, SingleSelectOption, TextInput } from '@strapi/design-system';
 import DocumentList from './DocumentList';
 import { useEmailSender, useTemplates, Template } from '../utils/templateUtils';
 
@@ -74,6 +74,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate, o
 
 const TemplatePicker: React.FC<TemplatePickerProps> = ({ onClose, documents }) => {
   const [template, setTemplate] = React.useState<string>('');
+  const [subject, setSubject] = React.useState<string>('');
   const [documentsList, setDocumentsList] = React.useState(documents);
   const [isLoading, setIsLoading] = React.useState(false);
   const [result, setResult] = React.useState<any>(null);
@@ -90,8 +91,8 @@ const TemplatePicker: React.FC<TemplatePickerProps> = ({ onClose, documents }) =
   };
 
   const send = async () => {
-    if (!template || documentsList.length === 0) {
-      setError('Please select a template and at least one document');
+    if (!template || !subject || documentsList.length === 0) {
+      setError('Please select a template, enter subject and at least one document');
       return;
     }
 
@@ -100,7 +101,7 @@ const TemplatePicker: React.FC<TemplatePickerProps> = ({ onClose, documents }) =
     setResult(null);
 
     try {
-      const response = await sendBulkEmails(template, documentsList);
+      const response = await sendBulkEmails(template, subject, documentsList);
       setResult(response);
 
       if (response.summary.failed > 0) {
@@ -124,6 +125,25 @@ const TemplatePicker: React.FC<TemplatePickerProps> = ({ onClose, documents }) =
         selectedTemplate: template,
         onTemplateChange: handleTemplateChange
       }),
+
+      // Subject Field
+      React.createElement(
+        Box,
+        { marginBottom: 3 },
+        React.createElement(
+          Typography,
+          { variant: 'beta', textColor: 'neutral700', marginBottom: 2 },
+          'Email Subject:'
+        ),
+        React.createElement(
+          TextInput,
+          {
+            value: subject,
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setSubject(e.target.value),
+            placeholder: 'Enter email subject'
+          }
+        ),
+      ),
 
       // Document List
       React.createElement(DocumentList, {
@@ -173,12 +193,13 @@ const TemplatePicker: React.FC<TemplatePickerProps> = ({ onClose, documents }) =
           Button,
           {
             onClick: send,
-            disabled: documentsList.length === 0 || !template || isLoading,
+            disabled: documentsList.length === 0 || !template || !subject || isLoading,
             loading: isLoading,
             style: { marginRight: '8px' }
           },
           isLoading ? 'Sending...' :
             !template ? 'Select a template to send emails' :
+            !subject ? 'Enter email subject to send emails' :
             `Send ${documentsList.length} email(s) with template: ${template}`
         ),
         React.createElement(

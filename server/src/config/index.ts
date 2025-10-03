@@ -3,7 +3,6 @@ export default {
     emailTemplate: {
       enabled: true,
       path: 'templates',
-      subject: 'Email',
       rateLimitDelay: 1000, // 1 second delay between emails
     },
   },
