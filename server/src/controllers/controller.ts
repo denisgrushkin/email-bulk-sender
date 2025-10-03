@@ -78,6 +78,8 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
 
   async sendBulkEmails(ctx) {
     try {
+      strapi.log.warn(`Server admin email: ${strapi.config.get('server.admin.email')}`);
+
       const { template, documents } = ctx.request.body;
 
       if (!template || !documents || !Array.isArray(documents)) {
